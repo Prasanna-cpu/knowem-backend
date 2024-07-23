@@ -4,7 +4,18 @@ import {AddUserSchema, UpdateUserSchema} from "../validation/UserValidation";
 
 export const getAllUsers=async (req:Request,res:Response)=>{
     try{
-        const allUser=await prisma.user.findMany();
+        const allUser=await prisma.user.findMany(
+            {
+                // include:{
+                //     posts:true
+                // }
+                select:{
+                    id:true,
+                    name:true,
+                    image:true
+                }
+            }
+        );
         res.status(200).json(allUser);
     }
     catch(err:any){
@@ -36,7 +47,10 @@ export const getUserById=async(req:Request,res:Response)=>{
     try{
         const {id}=req.params;
         const user=await prisma.user.findUnique({
-            where:{id:Number(id)}
+            where:{id:Number(id)},
+            include:{
+                posts:true
+            }
         })
         if(!user){
             return res.status(404).json({error:`User with id ${id} not found`,status:404});
@@ -77,7 +91,7 @@ export const updateUserById=async(req:Request,res:Response)=>{
             res.status(400).json({error:error.details[0].message,status:400});
         }
 
-        const body=req.body;
+        const {bio,name,image}=req.body;
         const {id}=req.params
         const check=await prisma.user.findUnique({
             where:{id:Number(id)}
@@ -88,7 +102,11 @@ export const updateUserById=async(req:Request,res:Response)=>{
 
         const updatedUser=await prisma.user.update({
             where:{id:Number(id)},
-            data:body
+            data:{
+                bio,
+                name,
+                image
+            }
         })
 
         return res.status(200).json(updatedUser);
