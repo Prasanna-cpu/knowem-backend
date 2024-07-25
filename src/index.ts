@@ -3,6 +3,8 @@ import express, {Express} from 'express';
 import dotenv from "dotenv"
 import userRouter from "./routes/userRoutes";
 import postRouter from "./routes/postRoute";
+import authRouter from "./routes/authRoute";
+import {authenticateToken} from "./middleware/authMiddleware";
 
 dotenv.config()
 
@@ -13,8 +15,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use("/user",userRouter)
-app.use("/post",postRouter)
+app.use("/user",authenticateToken,userRouter)
+app.use("/post",authenticateToken,postRouter)
+app.use("/auth",authRouter)
 
 
 

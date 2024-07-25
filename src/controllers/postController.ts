@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import prisma from "../lib/prisma";
-
+import jwt from "jsonwebtoken";
 export const getAllPosts=async(req:Request,res:Response)=>{
     try{
         const allPosts=await prisma.post.findMany({
@@ -28,19 +28,24 @@ export const getAllPosts=async(req:Request,res:Response)=>{
 
 
 export const addPost=async (req:Request,res:Response)=>{
-    try{
 
-        const {content,image,userId}=req.body;
+    try{
+        const {content,image}=req.body
+
+        //@ts-ignore
+        const user=req.user
+
+        // @ts-ignore
 
         const result=await prisma.post.create({
             data:{
                 content,
                 image,
-                userId//TODO managed by auth user
+                userId:user.id,
             }
         })
+        return res.status(201).json(result);
 
-        res.status(200).json(result);
     }
     catch(err:any){
         return res.status(500).send({error:err.message,status:500});
