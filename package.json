@@ -7,6 +7,7 @@
     "dev": "nodemon"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.620.0",
     "@prisma/client": "^5.17.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",

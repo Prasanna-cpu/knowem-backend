@@ -1,6 +1,7 @@
 import {Request,Response} from "express";
 import {generateAuthToken, tokenGenerator} from "../lib/TokenGenerator";
 import prisma from "../lib/prisma";
+import {sendEmailToken} from "../service/email";
 
 const EMAIL_EXPIRATION_MIN=50
 const AUTH_EXPIRATION_HOURS=10
@@ -35,6 +36,9 @@ export const login=async (req:Request, res:Response) => {
         })
 
         console.log(createToken)
+
+        await sendEmailToken(email,emailToken);
+
         res.status(200).json(createToken);
     }
     catch(err:any){
